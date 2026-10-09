@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Qorably UX Audit</title>
+<style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}</style>
+</head>
+<body>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+<style>
+  :root{
+    --ground:#F5F6F8; --card:#FFFFFF; --ink:#1C232C; --muted:#5A6470; --faint:#8A93A0;
+    --line:#DDE1E7; --line2:#C9CFD8;
+    --accent:#D95C51; --accent-ink:#B03E35; --accent-soft:#FBEEEC;
+    --sev-high:#B03E35; --sev-high-bg:#F9E9E7; --sev-med:#8A6410; --sev-med-bg:#F6EEDA; --sev-low:#4E5B6B; --sev-low-bg:#E8ECF1;
+    --good:#2E6B4F; --good-bg:#E4F0EA; --code-bg:#EEF0F4;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ground:#12161D; --card:#1A202A; --ink:#E8EBF0; --muted:#9BA5B2; --faint:#6C7683;
+      --line:#2A323E; --line2:#39424F;
+      --accent:#F08D86; --accent-ink:#F4A9A3; --accent-soft:#2B2226;
+      --sev-high:#F0968E; --sev-high-bg:#32211F; --sev-med:#E0B25E; --sev-med-bg:#2E2718; --sev-low:#A7B2C0; --sev-low-bg:#232A34;
+      --good:#8CC7A9; --good-bg:#1C2922; --code-bg:#222935;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#12161D; --card:#1A202A; --ink:#E8EBF0; --muted:#9BA5B2; --faint:#6C7683;
+    --line:#2A323E; --line2:#39424F;
+    --accent:#F08D86; --accent-ink:#F4A9A3; --accent-soft:#2B2226;
+    --sev-high:#F0968E; --sev-high-bg:#32211F; --sev-med:#E0B25E; --sev-med-bg:#2E2718; --sev-low:#A7B2C0; --sev-low-bg:#232A34;
+    --good:#8CC7A9; --good-bg:#1C2922; --code-bg:#222935;
+  }
+  *{box-sizing:border-box}
+  body{
+    background:var(--ground); color:var(--ink);
+    font-family:"Instrument Sans",system-ui,-apple-system,sans-serif;
+    font-size:16px; line-height:1.62; margin:0; padding:0 20px 90px;
+  }
+  .wrap{max-width:820px; margin:0 auto}
+  .mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+
+  header{padding:64px 0 20px; border-bottom:1px solid var(--line2)}
+  .eyebrow{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:11.5px; font-weight:500; letter-spacing:.18em; text-transform:uppercase; color:var(--accent-ink)}
+  h1{font-size:clamp(30px,5vw,42px); font-weight:700; letter-spacing:-.02em; line-height:1.08; margin:10px 0 18px; text-wrap:balance}
+  .meta{display:flex; flex-wrap:wrap; gap:8px 26px; font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:12px; color:var(--muted)}
+  .meta b{color:var(--ink); font-weight:500}
+
+  h2{font-size:13px; font-family:"IBM Plex Mono",ui-monospace,monospace; font-weight:600; letter-spacing:.16em; text-transform:uppercase; color:var(--accent-ink); margin:60px 0 6px}
+  h2 + p.lede{margin-top:8px}
+  h3{font-size:19px; font-weight:600; letter-spacing:-.01em; margin:34px 0 8px; text-wrap:balance}
+  p{max-width:66ch; margin:12px 0}
+  .lede{font-size:18px; line-height:1.6; color:var(--ink)}
+  ul{max-width:68ch; padding-left:22px; margin:12px 0}
+  li{margin:7px 0}
+  li::marker{color:var(--faint)}
+  code{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:.85em; background:var(--code-bg); border:1px solid var(--line); border-radius:4px; padding:1px 6px; white-space:nowrap}
+
+  .verdict{background:var(--card); border:1px solid var(--line); border-radius:8px; padding:26px 28px; margin-top:26px}
+  .verdict p{max-width:none}
+  .verdict .kicker{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted); margin:0 0 10px}
+
+  .findings{display:flex; flex-direction:column; gap:14px; margin-top:18px}
+  .finding{background:var(--card); border:1px solid var(--line); border-radius:8px; padding:20px 24px 16px}
+  .finding-head{display:flex; align-items:baseline; gap:12px; flex-wrap:wrap}
+  .fid{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:12.5px; font-weight:600; padding:2px 8px; border-radius:4px}
+  .fid.high{color:var(--sev-high); background:var(--sev-high-bg)}
+  .fid.med{color:var(--sev-med); background:var(--sev-med-bg)}
+  .fid.low{color:var(--sev-low); background:var(--sev-low-bg)}
+  .finding h4{font-size:16.5px; font-weight:600; margin:0; letter-spacing:-.005em; text-wrap:balance; flex:1; min-width:230px}
+  .finding p{font-size:15px; color:var(--muted); max-width:none; margin:10px 0 8px}
+  .finding p strong{color:var(--ink); font-weight:600}
+  .fix{font-size:14.5px; margin:8px 0 4px; padding-top:8px; border-top:1px dashed var(--line)}
+  .fix b{color:var(--good); font-weight:600}
+  .ev{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:11.5px; color:var(--faint); margin-top:8px}
+
+  .journey{border:1px solid var(--line); border-radius:8px; overflow:hidden; margin-top:18px}
+  .jrow{display:grid; grid-template-columns:150px 1fr; gap:16px; padding:14px 20px; background:var(--card); border-top:1px solid var(--line)}
+  .jrow:first-child{border-top:none}
+  .jmoment{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:12px; color:var(--accent-ink); padding-top:2px}
+  .jrow div:last-child{font-size:15px; color:var(--muted)}
+  .jrow div:last-child b{color:var(--ink); font-weight:600}
+  @media(max-width:560px){ .jrow{grid-template-columns:1fr; gap:4px} }
+
+  .goodlist li b{color:var(--ink)}
+  .goodlist li{color:var(--muted)}
+  .wins li{margin:9px 0}
+  .wins li b{font-weight:600}
+  .note{font-size:14px; color:var(--muted); border-left:2px solid var(--line2); padding:2px 0 2px 16px; margin-top:16px}
+  footer{margin-top:70px; padding-top:18px; border-top:1px solid var(--line); font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:11.5px; color:var(--faint)}
+  a{color:var(--accent-ink)}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">UX Audit · New user point of view</div>
+  <h1>Qorably, walked as a first&#8209;time user</h1>
+  <div class="meta">
+    <span>date <b>2026&#8209;08&#8209;25</b></span>
+    <span>env <b>staging</b></span>
+    <span>source <b>QA_Tool_Maby · design branch</b></span>
+    <span>method <b>live walkthrough + code cross&#8209;check</b></span>
+  </div>
+</header>
+
+<section>
+  <div class="verdict">
+    <p class="kicker">Verdict</p>
+    <p class="lede">The core loop is genuinely good. From a preset to five concrete, correctly tagged test cases took about ten seconds, and marking results feels instant. What holds the product back is everything around that loop: feedback that whispers when it should point, safety promises the backend only half keeps, an automation path that lets a new user run into a wall, and an accessibility baseline that is currently zero.</p>
+    <p style="margin-bottom:0">Priorities in one line each: give phones a way to navigate (H1), stop hard deleting test cases (H2), preflight the Run modal (H3), add the accessibility basics (H4), and fix Generate's validation story (M1).</p>
+  </div>
+</section>
+
+<section>
+  <h2>What already works</h2>
+  <ul class="goodlist">
+    <li><b>The aha is real.</b> Preset, Generate, five cases with happy path, negative, edge and validation tags, each with concrete steps ("photo.png, size 2MB"). The quality sells the tool by itself.</li>
+    <li><b>Result recording is tight.</b> One click on Passed updates the row chip, the metrics tile, a status chip in the detail, and stamps Last tested. Nothing to learn.</li>
+    <li><b>The app takes you to your result.</b> After generating, you land in the right suite automatically.</li>
+    <li><b>Storage earns trust.</b> Deleted projects show the original suite, a 15 day countdown, and Restore. The empty states across suites, Storage and Export explain themselves.</li>
+    <li><b>History has attribution.</b> Every create, run and delete is logged per person, in real time, searchable and filterable.</li>
+    <li><b>Helper copy is thoughtful.</b> "Use CSS selector syntax, not HTML attribute syntax", "leave blank to keep existing", the script modal explaining both ways forward. Someone cared here.</li>
+    <li><b>Nice connected pattern.</b> Dismissing the credentials reminder lights a red dot on Project Runners, so the nudge persists without nagging.</li>
+    <li><b>Long runs can be minimized</b>, and sessions persist across reloads, so the two field login stays out of the way.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>The first ten minutes</h2>
+  <div class="journey">
+    <div class="jrow"><div class="jmoment">00:00 · login</div><div><b>A gate with two fields and one mystery.</b> Nothing says whether "User ID" is invented or assigned, or who holds the team password. Empty submit flags one error at a time, as loose text not attached to the field.</div></div>
+    <div class="jrow"><div class="jmoment">00:30 · generate</div><div><b>Lands on the right screen.</b> The preset chips are the natural first click and they fill Feature and Description well. But clicking a second preset silently wiped the edits I had made to the first one.</div></div>
+    <div class="jrow"><div class="jmoment">02:00 · validation</div><div><b>Clicked Generate too early.</b> The only response is one 13px line at the bottom left, rendering literal asterisks: <code>** Fill in Project, Feature, and Description.**</code> No field turns red. Environment, marked required, was never checked at all.</div></div>
+    <div class="jrow"><div class="jmoment">03:00 · the aha</div><div><b>Five good cases in ten seconds.</b> Then, 2.5 seconds after landing on them, the "PI PI PI" credentials modal covers the screen before I have read my first generated case. The project also arrives collapsed, with metric tiles showing "--".</div></div>
+    <div class="jrow"><div class="jmoment">05:00 · automation</div><div><b>The Run button let me drive into a wall.</b> Zero scripts existed and no Base URL was configured, but the run started anyway, took minutes, and returned five failures reading <code>page.goto: Protocol error</code>. The fix lives in Project Runners; nothing pointed there. Primary button on the failure screen: Run again.</div></div>
+    <div class="jrow"><div class="jmoment">08:00 · cleanup</div><div><b>Deleting felt riskier than it is.</b> The project delete is a native browser confirm ("Delete this project and all its test cases?") that never mentions the 15 day Storage net. It sits in a menu labeled "Delete All". Storage itself, once found, is excellent.</div></div>
+  </div>
+</section>
+
+<section>
+  <h2>High severity</h2>
+  <div class="findings">
+    <div class="finding">
+      <div class="finding-head"><span class="fid high">H1</span><h4>Below 820px the app has no navigation at all</h4></div>
+      <p>The only responsive rule for small screens is <code>.sidebar{display:none}</code>. No hamburger, no top bar links, no fallback. A QA opening a case on their phone, or anyone in a split window, is stranded on whichever screen loaded first.</p>
+      <p class="fix"><b>Fix:</b> a collapsible drawer behind a menu button, or honestly gate it: "Qorably needs a wider window" with a link to the guide. Half hiding is the worst of both.</p>
+      <div class="ev">index.html:794</div>
+    </div>
+    <div class="finding">
+      <div class="finding-head"><span class="fid high">H2</span><h4>Case deletion is permanent while the product promises recoverability</h4></div>
+      <p>The guide says "a wrong click is recoverable". True for projects, which soft delete into Storage. False for test cases: the endpoint runs <code>DELETE FROM test_cases</code> with no trash, and the same is true for Delete selection in bulk. The confirm dialog doesn't distinguish the two, so users learn the wrong safety model from projects and apply it to cases.</p>
+      <p class="fix"><b>Fix:</b> soft delete cases into Storage too, or say plainly in the confirm that cases are gone forever. An Undo toast would cover the single click slip.</p>
+      <div class="ev">routes.js:326 · index.html:2165</div>
+    </div>
+    <div class="finding">
+      <div class="finding-head"><span class="fid high">H3</span><h4>Run automation lets a new user fail for minutes with no warning</h4></div>
+      <p>The Run modal happily launches an entire project with zero generated scripts, no Base URL, and no runner credentials. Result: a multi minute wait, then raw Playwright output per case ("Protocol error (Page.navigate): Cannot navigate to invalid URL"). The cause and the fix, Base URL in Project Runners, are never named. Results also vanish when the modal closes; no run history survives anywhere visible.</p>
+      <p class="fix"><b>Fix:</b> preflight before enabling Run ("0 of 5 cases have scripts · Base URL not set → Configure runner"), translate the three common Playwright failures into human sentences, and persist the last run per project.</p>
+      <div class="ev">observed live · runner.js</div>
+    </div>
+    <div class="finding">
+      <div class="finding-head"><span class="fid high">H4</span><h4>Accessibility baseline is zero</h4></div>
+      <p>The app contains no heading elements, no aria attributes, no roles, three focus styles, and no autocomplete anywhere. Preset chips are divs with click handlers, invisible to keyboard and screen reader. Every modal stays mounted in the accessibility tree at all times. For an internal tool this may feel academic; for a tool whose job is quality, it is the first thing a QA minded user will notice.</p>
+      <p class="fix"><b>Fix:</b> real h1/h2 structure, button elements for chips, <code>aria-hidden</code> or <code>display:none</code> on closed modals, visible focus states, <code>autocomplete="current-password"</code> on login.</p>
+      <div class="ev">grep across index.html: 0 aria, 0 role, 0 h1&#8211;h3</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Medium severity</h2>
+  <div class="findings">
+    <div class="finding">
+      <div class="finding-head"><span class="fid med">M1</span><h4>Generate validation misleads three different ways</h4></div>
+      <p>The error renders its own markdown (<code>**</code> shows as text), it lists fields that are already filled (the message is a fixed string, not built from what is actually missing), and Environment is marked required with an asterisk but never validated, so projects generate with no environment. No field is ever highlighted and the page doesn't scroll to the problem.</p>
+      <p class="fix"><b>Fix:</b> build the message from the actually missing fields, mark those fields inline, and either validate Environment or drop its asterisk.</p>
+      <div class="ev">index.html:2246</div>
+    </div>
+    <div class="finding">
+      <div class="finding-head"><span class="fid med">M2</span><h4>Switching presets silently destroys edited text</h4></div>
+      <p>The guide tells users to "start from a preset, then adjust it". Adjust, click another preset out of curiosity, and the adjustments are gone with no confirm and no undo.</p>
+      <p class="fix"><b>Fix:</b> confirm before overwriting a description the user has touched, or keep an undo of the previous text.</p>
+      <div class="ev">verified live</div>
+    </div>
+    <div class="finding">
+      <div class="finding-head"><span class="fid med">M3</span><h4>The credentials modal interrupts the product's best moment</h4></div>
+      <p>2.5 seconds after your first generated cases appear, "PI PI PI" covers them. The instinct is right (credentials do gate quality) and the dot on Project Runners after "Maybe later" is a lovely touch, but the timing spends the aha moment. The new project also arrives collapsed with "--" metric tiles, so the payoff needs an extra click even after dismissing.</p>
+      <p class="fix"><b>Fix:</b> auto expand the newly generated project, and hold the reminder until the user has expanded or interacted, or demote it to a banner. Explain "--" tiles ("open a project to see metrics") or show zeros.</p>
+      <div class="ev">index.html:3700 · 2264</div>
+    </div>
+    <div class="finding">
+      <div class="finding-head"><span class="fid med">M4</span><h4>The login gate is an overlay in front of a fully rendered app</h4></div>
+      <p>The entire UI, all modals and the full guide ship in the DOM before authentication, behind a fixed overlay. API routes are properly session guarded, so data is safe, but the product surface, feature set and copy are readable by anyone, and authenticated users see the login flash on every load while the session check runs.</p>
+      <p class="fix"><b>Fix:</b> render the shell only after <code>/auth/me</code> resolves, and show a neutral loading state instead of the login flash.</p>
+      <div class="ev">auth.js · index.html:1672</div>
+    </div>
+    <div class="finding">
+      <div class="finding-head"><span class="fid med">M5</span><h4>Runner credentials default to the Production tab</h4></div>
+      <p>The environment tabs open on Production, so the path of least attention points credentials and first crawls at the live product.</p>
+      <p class="fix"><b>Fix:</b> default to Staging, or to the environment the project was generated for.</p>
+      <div class="ev">observed live</div>
+    </div>
+    <div class="finding">
+      <div class="finding-head"><span class="fid med">M6</span><h4>No routing: one URL for everything, back button exits</h4></div>
+      <p>Suites, projects and tools never change the URL. Nothing is linkable ("look at TC 03" can't travel in Slack), refresh loses your place, and browser back leaves the app.</p>
+      <p class="fix"><b>Fix:</b> hash routes are enough: <code>#/regression/ux&#8209;audit&#8209;demo</code>.</p>
+      <div class="ev">observed live</div>
+    </div>
+    <div class="finding">
+      <div class="finding-head"><span class="fid med">M7</span><h4>The guide promises scripts that don't exist yet</h4></div>
+      <p>"Each case carries a generated script behind the &lt;/&gt; button" describes the ideal state, not the fresh project, where the modal is empty and the button reads Regenerate even though nothing was ever generated.</p>
+      <p class="fix"><b>Fix:</b> label it Generate script when none exists, and soften the guide's claim.</p>
+      <div class="ev">script modal, fresh project</div>
+    </div>
+    <div class="finding">
+      <div class="finding-head"><span class="fid med">M8</span><h4>Identity is honor system and there is no way out</h4></div>
+      <p>Login is any free text name plus one shared password, so History attribution is spoofable by design, and the UI has no logout control at all (the endpoint exists, unused). Fine tradeoffs for a small team, but they should be chosen, not accidental.</p>
+      <p class="fix"><b>Fix:</b> a logout item under the identity badge, and a short note in the guide about how identity works.</p>
+      <div class="ev">auth.js:9 · no logout in index.html</div>
+    </div>
+    <div class="finding">
+      <div class="finding-head"><span class="fid med">M9</span><h4>History speaks in internals</h4></div>
+      <p>A run logs as "design ran mode:by_project (5 cases)", leaking the enum and omitting which project was run. Entries also aren't clickable, so History is a dead end rather than a navigation surface.</p>
+      <p class="fix"><b>Fix:</b> "design ran UX Audit Demo, entire project, 5 cases", linked to the project.</p>
+      <div class="ev">History screen</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Low severity</h2>
+  <div class="findings">
+    <div class="finding">
+      <div class="finding-head"><span class="fid low">L1</span><h4>Deletion UI undersells its own safety</h4></div>
+      <p>Project delete hides behind a menu item called "Delete All" (all what?), then a native browser confirm that clashes with the styled UI and never mentions Storage. People hesitate before a safe action and breeze past a permanent one (H2).</p>
+      <p class="fix"><b>Fix:</b> rename to "Delete project…", use the app's own modal, and say "recoverable in Storage for 15 days".</p>
+      <div class="ev">index.html:2183</div>
+    </div>
+    <div class="finding">
+      <div class="finding-head"><span class="fid low">L2</span><h4>Small copy and polish slips</h4></div>
+      <p>The Generate form numbers skip from 09 to 11. "VER VIDEO" is Portuguese in an English UI, and runner session times format with the pt&#8209;BR locale. "BeatifulAngie" drops an u. Metadata inputs truncate their own values at 1440px ("Desktop Pa", "Environmen"). Import documentation lives under a section titled Export.</p>
+      <p class="fix"><b>Fix:</b> sweep pass. Each is minutes; together they read as unfinished.</p>
+      <div class="ev">index.html:2371 et al.</div>
+    </div>
+    <div class="finding">
+      <div class="finding-head"><span class="fid low">L3</span><h4>Login screen leaves new users guessing</h4></div>
+      <p>"Your name or ID (e.g. Kiwi)" doesn't say the name is invented on the spot, and Team password has no "ask your lead" hint. The password field lacks autocomplete, so password managers won't reliably offer the shared secret.</p>
+      <p class="fix"><b>Fix:</b> one caption line under the form settles both, plus the autocomplete attribute.</p>
+      <div class="ev">index.html:808&#8211;812</div>
+    </div>
+    <div class="finding">
+      <div class="finding-head"><span class="fid low">L4</span><h4>Empty states point but don't carry</h4></div>
+      <p>"Go to Generate and create test cases for this suite" is plain text; the destination is a click away but not clickable. Dead code note: a light/dark theme toggle exists in the markup and is disabled with <code>display:none !important</code>.</p>
+      <p class="fix"><b>Fix:</b> make the empty state CTA a button; delete or ship the toggle.</p>
+      <div class="ev">index.html:160 · 880</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Quick wins</h2>
+  <p>Under an hour each, ordered by leverage:</p>
+  <ul class="wins">
+    <li><b>Preflight the Run modal</b> with script count and Base URL status, and point to Project Runners (defuses H3 without touching the runner).</li>
+    <li><b>Auto expand the project after generation</b> and delay the PI PI PI reminder until after first interaction (M3).</li>
+    <li><b>Honest delete confirms:</b> mention Storage on project delete, mention permanence on case delete (H2 stopgap, L1).</li>
+    <li><b>Validation message from actual missing fields</b>, drop the literal asterisks, validate Environment or unmark it (M1).</li>
+    <li><b>Confirm before a preset overwrites edited text</b> (M2).</li>
+    <li><b>Default runner tabs to Staging</b> (M5).</li>
+    <li><b>Copy sweep:</b> VER VIDEO, mode:by_project, Delete All, BeatifulAngie, 09→11 numbering (L2, M9).</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Method and audit trail</h2>
+  <p class="note">Audited as a first time user on the staging environment (viewport 1440×900), then cross checked against the design branch of QA_Tool_Maby. During the session I generated one project, UX Audit Demo (Claude), marked one case Passed, ran its automation once, and deleted it. It now sits in Storage with 15 days left and can be restored or left to expire; the run, create and delete entries appear in History under "design". Mobile behavior was verified in source (the 820px rule) since the audit pane could not emulate a phone viewport reliably. The one thing I could not exercise end to end is a fully configured runner with credentials, which would be worth a follow up pass together with the crawl and Deep Analyse flows.</p>
+</section>
+
+<footer>Qorably UX Audit · 2026&#8209;08&#8209;25 · prepared by Claude for the Fetchly design team</footer>
+</div>
+</body>
+</html>
